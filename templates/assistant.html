@@ -3,32 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Assistant</title>
+    <title>NutriHelp Assistant</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .chat-container { max-width: 600px; margin: auto; }
-        .chat-box { border: 1px solid #ccc; padding: 15px; border-radius: 5px; margin-bottom: 10px; }
-        .user { text-align: right; color: black; }
-        .assistant { text-align: left; color: black; }
-        input, button { width: 100%; padding: 10px; margin-top: 10px; }
+        body {
+            font-family: "Arial", sans-serif;
+            background: linear-gradient(to bottom, #f9e3e4, #fcd2d4, #f6c5d0, #e8d9fa); 
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            background: #ffffff;
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            border-radius: 15px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(to right, #ff007b, #ff6600);
+            padding: 10px 20px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f5f5fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user {
+            background-color: #ff007b;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .assistant {
+            background-color: #0066ff;
+            color: white;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #fef8f8;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff6600;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #cc5200;
+        }
+
+        @media (max-width: 600px) {
+            .chat-container {
+                height: 90%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="chat-container">
+        <div class="header">
+            <img src="UrFULogo_U.png" alt="UrFU Logo">
+            Chat Assistant
+        </div>
         <div id="chat" class="chat-box"></div>
-        <input type="text" id="message" placeholder="Введите запрос на составление рациона..." />
-        <button onclick="sendMessage()">Отправить</button>
+        <div class="input-container">
+            <input type="text" id="message" placeholder="Введите запрос на составление рациона..." />
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
     </div>
     <script>
         async function sendMessage() {
             const message = document.getElementById("message").value;
             if (!message) return;
 
-            // Отображение сообщения пользователя
             const chatBox = document.getElementById("chat");
-            chatBox.innerHTML += `<p class="user">Вы: ${message}</p>`;
+            chatBox.innerHTML += `<div class="message user">Вы: ${message}</div>`;
 
-            // Отправка сообщения на сервер
+            chatBox.scrollTop = chatBox.scrollHeight;
+
             const response = await fetch("/ask", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -37,12 +140,13 @@
 
             const data = await response.json();
             if (data.response) {
-                chatBox.innerHTML += `<p class="assistant">NutriHelp: ${data.response}</p>`;
+                chatBox.innerHTML += `<div class="message assistant">NutriHelp: ${data.response}</div>`;
             } else {
-                chatBox.innerHTML += `<p class="assistant">Error: ${data.error}</p>`;
+                chatBox.innerHTML += `<div class="message assistant">Ошибка: ${data.error}</div>`;
             }
 
-            // Очистка поля ввода
+            chatBox.scrollTop = chatBox.scrollHeight;
+
             document.getElementById("message").value = "";
         }
     </script>
