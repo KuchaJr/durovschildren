@@ -14,7 +14,11 @@
     <script
     type="module"
     src="https://pyscript.net/snapshots/2024.9.2/core.js"></script>
-    
+    <script>
+        function gotoPage(){
+            window.location.href = 'templates/assistant.html'
+        }
+    </script>
 
     <style>
         main {
@@ -170,6 +174,8 @@
             <button style="margin: 20px;">Поиск</button>
         </div>
     </div>
+    
+    <button onclick="gotoPage()">Ассистент</button>
 
     <div id="buttonsLR">
         <button id="buttonL">&#60;</button>
@@ -324,6 +330,7 @@
 
         // req()
     </script>
+
 
 
 
