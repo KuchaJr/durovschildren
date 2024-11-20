@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="X5R_request.py">
+    <title>Document</title>
+    <!-- <script src="node1.js"></script> -->
+
+    <link
+    rel="stylesheet"
+    href="https://pyscript.net/snapshots/2024.9.2/core.css"/>
+    <script
+    type="module"
+    src="https://pyscript.net/snapshots/2024.9.2/core.js"></script>
+    
+
+    <style>
+        main {
+            outline: blue solid 2px;
+        }
+
+        #fillingDiv {
+            width: 100%;
+            height: 10em;
+        }
+
+        #mainDiv {
+            background-color: black;
+            color: black;
+            display: flex;
+            height: 50%;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 10em;
+            padding-bottom: 5em;
+        }
+
+        #mainText {
+            color: white;
+            font-size: 2em;
+
+        }
+
+        #decor {
+            margin: 0px;
+            position: sticky;
+            display: flex;
+            top: 0;
+            width: 100%;
+            height: 5em;
+            outline: blue solid 2px;
+            /* display: block; */
+            z-index: 1;
+            background-color: rgb(44, 95, 167);
+            /* border-bottom-left-radius: 1em;
+            border-bottom-right-radius: 1em; */
+            align-items: center;
+            /* justify-content: center; */
+        }
+
+        #leftWin {
+            position: sticky;
+            outline: blue solid 2px;
+            height: 100vh;
+            width: 8em;
+            /* display: flex; */
+            display: none;
+            justify-content: center;
+            float: left;
+            clear: both;
+            margin-right: 10px;
+
+        }
+
+        #decorImg {
+            margin: 5px 5px 5px 10px;
+            margin-right: auto;
+            width: 3.3em;
+            height: 4em;
+            /* position: relative; */
+            float: left;
+            align-self: auto;
+
+        }
+
+        p {
+
+            /* margin: 3px 0px 3px 5px; */
+            color: rgb(82, 82, 82);
+            transition: 1s;
+        }
+
+        p:hover {
+            color: rgb(11, 64, 137);
+            transition: 1s;
+        }
+
+        input {
+            width: 20em;
+            height: 2em;
+            border-radius: 1em;
+            border-color: white;
+            border: none;
+            /* position: absolute;
+            margin-left: auto;
+            margin-right: auto; */
+        }
+
+        #blockCenter {
+            /* float: inline-start; */
+            /* display: flex; */
+            display: none;
+            border-radius: 3em;
+            margin-top: 2em;
+            margin-left: auto;
+            margin-right: auto;
+            width: 70%;
+            height: 40%;
+            border: blue solid 2px;
+
+        }
+
+        #search {
+            display: flex;
+            position: absolute;
+            justify-content: center;
+            align-items: center;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        #productsDiv {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-evenly;
+            background-color: bisque;
+            margin: 10px;
+        }
+
+        #buttonsLR {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin: 1em;
+        }
+
+        h2 {
+            /* text-align: center; */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="decor">
+        <img src="UrFULogo_U.png" alt="картинка" id="decorImg" style="width: 4em; height: 4em; padding: 0px; margin: 0px;">
+        <div id="search">
+            <input type="text" placeholder="Ищете что-то?..">
+            <button style="margin: 20px;">Поиск</button>
+        </div>
+    </div>
+
+    <div id="buttonsLR">
+        <button id="buttonL">&#60;</button>
+        <button id="buttonR">&#62;</button>
+    </div>
+
+    <p style="text-align: center;" id="pageNum"></p>
+
+    <div id="leftWin">
+        <p> &gt;&nbsp;Новинки&nbsp;&#10071;</p>
+        <p></p>
+    </div>
+
+    <div id="blockCenter">
+        <h2>Популярные новинки</h2>
+    </div>
+
+    <div id="productsDiv">
+
+    </div>
+
+
+    <script>
+        let products = [];
+        let searchInput = document.querySelector('input');
+        let searchButton = document.querySelector('button');
+        let buttonL = document.getElementById('buttonL');
+        let buttonR = document.getElementById('buttonR');
+        let productsDiv = document.getElementById('productsDiv');
+        let pageNum = document.getElementById('pageNum');
+        let page = 1;
+
+
+        buttonL.addEventListener('click', function(event) {
+            if (page == 0) {
+                console.log('ниже не пойдет')
+            }
+            else if (page > 0) {
+                page -= 1;
+                req(page);
+            }
+        });
+
+        buttonR.addEventListener('click', function(event) {
+            page += 1;
+            req(page);
+        });
+
+
+
+
+
+        searchButton.addEventListener('click', function(event) {
+            req(page);
+        });
+
+        async function req(page) {
+            while(productsDiv.childNodes.length) {
+                productsDiv.removeChild(productsDiv.childNodes[0])
+            }
+
+            let response = await fetch('https://5d.5ka.ru/api/catalog/v2/stores/Y232/search?mode=delivery&q=' + searchInput.value + '&page=' + page);
+            let x = await response.json();
+            // console.log(x);
+            for (let product of x.products) {
+                console.log(product);
+
+                let name = document.createElement('p');
+                let price = document.createElement('p');
+                let discount = document.createElement('p');
+                let weight = document.createElement('p');
+                let productImg = document.createElement('img');
+                let divCard = document.createElement('div');
+                let imgDiv = document.createElement('div');
+
+                name.style.textAlign = 'center';
+                name.style.margin = '0px';
+
+                discount.style.textDecorationLine = 'line-through';
+                discount.style.textDecorationColor = 'red';
+
+                // productImg.style.display = 'block';
+
+                divCard.style.display = 'flex';
+                divCard.style.flexDirection = 'column';
+                divCard.style.justifyContent = 'center';
+                divCard.style.backgroundColor = 'white';
+                divCard.style.border = '2px solid black';
+                divCard.style.borderRadius = '50px';
+                divCard.style.width = '17em';
+                divCard.style.height = '22em';
+                divCard.style.margin = '20px'
+
+
+                productImg.src = product['image_links']['normal'][0];
+
+                if (productImg.src.aspectRatio > 1) {
+                    divCard.style.width = '22em';
+                    divCard.style.height = '17em';
+                }
+
+
+                imgDiv.style.display = 'flex';
+                imgDiv.style.flexWrap = 'wrap';
+                imgDiv.style.width = '100%';
+                imgDiv.style.display = 'inline-block';
+                imgDiv.style.textAlign = 'center';
+                // imgDiv.style.width = '2em'
+
+                price.style.textAlign = 'center';
+                price.style.margin = '0px';
+
+                name.append(product['name'] + '\n');
+
+                // if (product['prices']['discount'] != null) {
+                //     price.append(product['prices']['regular'] + product['prices']['discount'] + '\n');
+                // }
+                // else {
+                //     price.append(product['prices']['regular'] + '\n');
+                // }
+
+                price.append(product['prices']['regular'] + '\n');
+
+                weight.style.margin = '0px';
+                weight.style.textAlign = 'center';
+                weight.append(product['property_clarification'])
+
+
+
+
+                productImg.style.width = '5em';
+                productImg.style.padding = '0.5em';
+                // productImg.style. = '';
+                productImg.src = product['image_links']['normal'][0];
+
+                imgDiv.append(productImg)
+
+                divCard.append(imgDiv);
+                divCard.append(name);
+                divCard.append(price);
+                divCard.append(weight);
+                productsDiv.append(divCard);
+                console.log(divCard)
+
+                
+            }
+            pageNum.innerHTML = '';
+            pageNum.append('Страница: ' + page);
+        }
+
+
+
+        // req()
+    </script>
+
+
+
+
+
+</html>
